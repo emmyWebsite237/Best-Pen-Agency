@@ -252,6 +252,7 @@
     if (step === 3) {
       const count = onboarding.gender === "female" ? FEMALE_AVATAR_COUNT : MALE_AVATAR_COUNT;
       const folder = onboarding.gender === "female" ? "female" : "male";
+
       let grid = "";
       for (let i = 1; i <= count; i++) {
         const path = `assets/profile-pic/${folder}/avatar${i}.png`;
@@ -264,25 +265,45 @@
         natureGrid += `<div class="avatar-option" data-path="${path}"><img src="${path}" alt="Nature avatar ${i}" onerror="this.parentElement.textContent='${i}'"></div>`;
       }
 
-      el.innerHTML = `
-        ${progressDots(3, 4)}
-        <h2>Pick your avatar</h2>
-        <p class="sub">Choose one to represent you on your dashboard.</p>
-        <div class="avatar-grid">${grid}</div>
-        <p class="sub" style="margin-top:26px;margin-bottom:14px;">Prefer something different? Pick a nature-inspired avatar instead.</p>
-        <div class="avatar-grid">${natureGrid}</div>
-        <button class="btn btn-primary btn-block" id="ob-avatar-next" style="margin-top:24px;" disabled>Continue →</button>
-      `;
-      const nextBtn = document.getElementById("ob-avatar-next");
-      el.querySelectorAll(".avatar-option").forEach((opt) => {
-        opt.addEventListener("click", () => {
-          el.querySelectorAll(".avatar-option").forEach(o => o.classList.remove("selected"));
-          opt.classList.add("selected");
-          onboarding.avatarUrl = opt.getAttribute("data-path");
-          nextBtn.disabled = false;
+      function renderPicker() {
+        el.innerHTML = `
+          ${progressDots(3, 4)}
+          <h2>Pick your avatar</h2>
+          <p class="sub">Choose one to represent you on your dashboard.</p>
+          <div class="avatar-picker-scroll">
+            <div class="avatar-grid">${grid}</div>
+            <p class="sub" style="margin-top:22px;margin-bottom:14px;">Prefer something different? Pick a nature-inspired avatar instead.</p>
+            <div class="avatar-grid">${natureGrid}</div>
+          </div>
+        `;
+        el.querySelectorAll(".avatar-option").forEach((opt) => {
+          opt.addEventListener("click", () => {
+            onboarding.avatarUrl = opt.getAttribute("data-path");
+            renderPreview();
+          });
         });
-      });
-      nextBtn.addEventListener("click", () => renderOnboardingStep(4));
+      }
+
+      function renderPreview() {
+        el.innerHTML = `
+          ${progressDots(3, 4)}
+          <h2>Pick your avatar</h2>
+          <p class="sub">Looking good. Happy with this one?</p>
+          <div class="avatar-preview-row">
+            <div class="avatar-preview-circle"><img src="${onboarding.avatarUrl}" alt="Selected avatar"></div>
+            <button type="button" class="choose-another-btn" id="choose-another-btn">Choose another profile pic</button>
+          </div>
+          <button class="btn btn-primary btn-block" id="ob-avatar-next">Continue →</button>
+        `;
+        document.getElementById("choose-another-btn").addEventListener("click", renderPicker);
+        document.getElementById("ob-avatar-next").addEventListener("click", () => renderOnboardingStep(4));
+      }
+
+      if (onboarding.avatarUrl) {
+        renderPreview();
+      } else {
+        renderPicker();
+      }
     }
 
     if (step === 4) {
