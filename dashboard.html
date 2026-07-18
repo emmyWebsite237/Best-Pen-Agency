@@ -89,8 +89,9 @@
 <script src="js/supabase-client.js"></script>
 <script src="js/auth.js"></script>
 <script>
-  const MALE_AVATAR_COUNT = 10;
-  const FEMALE_AVATAR_COUNT = 10;
+  const MALE_AVATAR_COUNT = 24;
+  const FEMALE_AVATAR_COUNT = 24;
+  const NATURE_AVATAR_COUNT = 36;
 
   let currentUser = null;
   let profile = null;
@@ -256,11 +257,20 @@
         const path = `assets/profile-pic/${folder}/avatar${i}.png`;
         grid += `<div class="avatar-option" data-path="${path}"><img src="${path}" alt="Avatar ${i}" onerror="this.parentElement.textContent='${i}'"></div>`;
       }
+
+      let natureGrid = "";
+      for (let i = 1; i <= NATURE_AVATAR_COUNT; i++) {
+        const path = `assets/profile-pic/nature/avatar${i}.png`;
+        natureGrid += `<div class="avatar-option" data-path="${path}"><img src="${path}" alt="Nature avatar ${i}" onerror="this.parentElement.textContent='${i}'"></div>`;
+      }
+
       el.innerHTML = `
         ${progressDots(3, 4)}
         <h2>Pick your avatar</h2>
         <p class="sub">Choose one to represent you on your dashboard.</p>
         <div class="avatar-grid">${grid}</div>
+        <p class="sub" style="margin-top:26px;margin-bottom:14px;">Prefer something different? Pick a nature-inspired avatar instead.</p>
+        <div class="avatar-grid">${natureGrid}</div>
         <button class="btn btn-primary btn-block" id="ob-avatar-next" style="margin-top:24px;" disabled>Continue →</button>
       `;
       const nextBtn = document.getElementById("ob-avatar-next");
